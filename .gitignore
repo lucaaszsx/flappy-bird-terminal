@@ -1,0 +1,11 @@
+# Build Files
+build/
+bin/
+*.o
+
+# Cache
+.cache
+
+# Misc
+compile_commands.json
+.zed
