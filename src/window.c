@@ -1,7 +1,5 @@
 #include "window.h"
-#include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
 
@@ -30,7 +28,8 @@ void win_refresh(Window *win) {
 
 void win_move_cursor(Window *win, int x, int y) {
     // todo: verify if the x and y are in range of the width/height of the window
-    fprintf(stdout, "\033[%d;%dH", y, x);
+    // convert 0-indexed positions (x,y) to 1-indexed positions
+    fprintf(stdout, "\033[%d;%dH", y + 1, x + 1);
 }
 
 void win_put_str(char *color, char *s) {
