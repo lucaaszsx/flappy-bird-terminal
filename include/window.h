@@ -7,13 +7,13 @@
 typedef struct {
     unsigned short w;
     unsigned short h;
-} Window;
+} win_t;
 
-void win_init(Window *win);
+void win_init(win_t *win);
 void win_stop();
-void win_refresh(Window *);
-void win_move_cursor(Window *, int x, int y);
+void win_refresh(win_t *);
+void win_move_cursor(win_t *, int x, int y);
 void win_clear();
 void win_puts(char *s);
-void win_frect(Window *, int x, int y, int w, int h);
+void win_frect(win_t *, int x, int y, int w, int h);
 void win_flush();

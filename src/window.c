@@ -3,7 +3,7 @@
 #include <string.h>
 #include <sys/ioctl.h>
 
-void win_init(Window *win) {
+void win_init(win_t *win) {
     win_refresh(win);
 
     // enables alternate screen buffer and turns cursor invisible
@@ -18,7 +18,7 @@ void win_stop() {
     win_flush();
 }
 
-void win_refresh(Window *win) {
+void win_refresh(win_t *win) {
     struct winsize ws;
     ioctl(0, TIOCGWINSZ, &ws);
 
@@ -26,7 +26,7 @@ void win_refresh(Window *win) {
     win->h = ws.ws_row;
 }
 
-void win_move_cursor(Window *win, int x, int y) {
+void win_move_cursor(win_t *win, int x, int y) {
     // todo: verify if the x and y are in range of the width/height of the window
     // convert 0-indexed positions (x,y) to 1-indexed positions
     fprintf(stdout, "\033[%d;%dH", y + 1, x + 1);
@@ -41,7 +41,7 @@ void win_clear() {
     fprintf(stdout, "\033[H\033[2J\033[3J");
 }
 
-void win_frect(Window *win, int x, int y, int w, int h) {
+void win_frect(win_t *win, int x, int y, int w, int h) {
     char rect_row[w + 1];
     memset(rect_row, 'X', w);
     rect_row[w] = '\0';

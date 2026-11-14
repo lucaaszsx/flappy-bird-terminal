@@ -2,7 +2,6 @@
 #include <bits/time.h>
 #include <signal.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -12,7 +11,7 @@
 const float TARGET_FPS = 30.0f;
 const uint64_t TARGET_FRAME_TIME = (uint64_t) (NS_IN_SEC / TARGET_FPS); // frames per nanosecond
 
-Window window;
+win_t window;
 
 void on_window_resize(int) {
     win_refresh(&window);
@@ -34,12 +33,15 @@ int main() {
     while (1) {
         clock_gettime(CLOCK_MONOTONIC, &frame_start);
 
+        // rendering
         win_clear();
 
+        win_frect(&window, 20, 0, 10, 10);
         win_frect(&window, 10, 10, 10, 10);
 
         win_flush();
 
+        // fps limiter
         clock_gettime(CLOCK_MONOTONIC, &frame_end);
 
         uint64_t delta_time =
