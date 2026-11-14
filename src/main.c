@@ -35,10 +35,10 @@ int main() {
         // rendering
         win_clear();
 
-        win_draw_color(&window, CL_GREEN);
-        win_frect(&window, 20, 0, 10, 10);
         win_draw_color(&window, CL_YELLOW);
         win_frect(&window, 10, 10, 10, 10);
+        win_draw_color(&window, CL_GREEN);
+        win_frect(&window, 15, 5, 10, 10);
 
         win_flush();
 

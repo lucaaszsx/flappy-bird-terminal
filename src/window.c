@@ -20,7 +20,7 @@ void win_init(win_t *win) {
     win_flush();
 }
 
-void win_stop() {
+void win_stop(void) {
     // disable alternate screen buffer and turns cursor visible again
     fprintf(stdout, "\033[?1049l\x1b[?25h");
     win_flush();
@@ -48,7 +48,7 @@ void win_put_str(win_t *win, char *s) {
     fprintf(stdout, "%s%s", _get_cl_enum(win->curr_color), s);
 }
 
-void win_clear() {
+void win_clear(void) {
     fprintf(stdout, "\033[H\033[2J\033[3J");
 }
 
@@ -63,7 +63,7 @@ void win_frect(win_t *win, int x, int y, int w, int h) {
     }
 }
 
-void win_flush() {
+void win_flush(void) {
     fflush(stdout);
 }
 

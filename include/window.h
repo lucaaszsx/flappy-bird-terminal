@@ -13,12 +13,15 @@ typedef struct {
 } win_t;
 
 void win_init(win_t *win);
-void win_stop();
-void win_refresh(win_t *);
+void win_stop(void);
+void win_refresh(win_t *win);
+
+// control
 void win_move_cursor(win_t *, int x, int y);
+void win_flush(void);
+
+// drawing
 void win_draw_color(win_t *win, win_color_t c);
 void win_put_str(win_t *win, char *s);
-void win_clear();
-void win_puts(char *s);
+void win_clear(void);
 void win_frect(win_t *, int x, int y, int w, int h);
-void win_flush();
