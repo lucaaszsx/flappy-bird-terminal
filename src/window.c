@@ -3,8 +3,16 @@
 #include <string.h>
 #include <sys/ioctl.h>
 
+#define ANSI_GREEN  "\e[032m"
+#define ANSI_YELLOW "\e[033m"
+#define ANSI_RST    "\e[0m"
+
+char *_get_cl_enum(win_color_t c);
+
 void win_init(win_t *win) {
     win_refresh(win);
+
+    win->curr_color = CL_NC;
 
     // enables alternate screen buffer and turns cursor invisible
     fprintf(stdout, "\033[?1049h\033[?25l");
@@ -32,9 +40,12 @@ void win_move_cursor(win_t *win, int x, int y) {
     fprintf(stdout, "\033[%d;%dH", y + 1, x + 1);
 }
 
-void win_put_str(char *color, char *s) {
-    if (color != NULL) fprintf(stdout, "%s%s" CL_NC, color, s);
-    else fprintf(stdout, "%s", s);
+void win_draw_color(win_t *win, win_color_t c) {
+    win->curr_color = c;
+}
+
+void win_put_str(win_t *win, char *s) {
+    fprintf(stdout, "%s%s", _get_cl_enum(win->curr_color), s);
 }
 
 void win_clear() {
@@ -48,10 +59,21 @@ void win_frect(win_t *win, int x, int y, int w, int h) {
 
     for (int k = y; k < y + h; k++) {
         win_move_cursor(win, x, k);
-        win_put_str(CL_GREEN, rect_row);
+        win_put_str(win, rect_row);
     }
 }
 
 void win_flush() {
     fflush(stdout);
+}
+
+char *_get_cl_enum(win_color_t c) {
+    switch (c) {
+        case CL_GREEN:
+            return ANSI_GREEN;
+        case CL_YELLOW:
+            return ANSI_YELLOW;
+        default:
+            return ANSI_RST;
+    }
 }

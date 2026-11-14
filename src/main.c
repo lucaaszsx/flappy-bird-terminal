@@ -6,7 +6,6 @@
 #include <time.h>
 
 #define NS_IN_SEC 1000000000ULL
-#define NS_IN_MS
 
 const float TARGET_FPS = 30.0f;
 const uint64_t TARGET_FRAME_TIME = (uint64_t) (NS_IN_SEC / TARGET_FPS); // frames per nanosecond
@@ -36,7 +35,9 @@ int main() {
         // rendering
         win_clear();
 
+        win_draw_color(&window, CL_GREEN);
         win_frect(&window, 20, 0, 10, 10);
+        win_draw_color(&window, CL_YELLOW);
         win_frect(&window, 10, 10, 10, 10);
 
         win_flush();
