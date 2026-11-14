@@ -9,13 +9,13 @@ void win_init(Window *win) {
     // enables alternate screen buffer and turns cursor invisible
     fprintf(stdout, "\033[?1049h\033[?25l");
     win_move_cursor(win, 0, 0);
-    fflush(stdout);
+    win_flush();
 }
 
 void win_stop() {
     // disable alternate screen buffer and turns cursor visible again
     fprintf(stdout, "\033[?1049l\x1b[?25h");
-    fflush(stdout);
+    win_flush();
 }
 
 void win_refresh(Window *win) {
@@ -39,7 +39,6 @@ void win_put_str(char *color, char *s) {
 
 void win_clear() {
     fprintf(stdout, "\033[H\033[2J\033[3J");
-    fflush(stdout);
 }
 
 void win_frect(Window *win, int x, int y, int w, int h) {
