@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stddef.h>
 typedef enum {
     CL_GREEN,
     CL_YELLOW,
@@ -9,6 +10,8 @@ typedef enum {
 typedef struct {
     unsigned short w;
     unsigned short h;
+    char *block_char;
+    size_t block_len;
     win_color_t curr_color;
 } win_t;
 
@@ -21,6 +24,7 @@ void win_move_cursor(win_t *, int x, int y);
 void win_flush(void);
 
 // drawing
+void win_block_char(win_t *win, char *block_char);
 void win_draw_color(win_t *win, win_color_t c);
 void win_put_str(win_t *win, char *s);
 void win_clear(void);

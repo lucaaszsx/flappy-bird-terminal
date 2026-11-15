@@ -29,6 +29,8 @@ int main() {
 
     struct timespec frame_start, frame_end;
 
+    win_block_char(&window, "\u2588");
+
     while (1) {
         clock_gettime(CLOCK_MONOTONIC, &frame_start);
 

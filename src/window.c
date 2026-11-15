@@ -11,7 +11,9 @@ char *_get_cl_enum(win_color_t c);
 
 void win_init(win_t *win) {
     win_refresh(win);
+    win_block_char(win, "X");
 
+    // default to uncolored output
     win->curr_color = CL_NC;
 
     // enables alternate screen buffer and turns cursor invisible
@@ -34,10 +36,16 @@ void win_refresh(win_t *win) {
     win->h = ws.ws_row;
 }
 
+
 void win_move_cursor(win_t *win, int x, int y) {
     // todo: verify if the x and y are in range of the width/height of the window
     // convert 0-indexed positions (x,y) to 1-indexed positions
     fprintf(stdout, "\033[%d;%dH", y + 1, x + 1);
+}
+
+void win_block_char(win_t *win, char *block_char) {
+    win->block_char = block_char;
+    win->block_len = strlen(block_char);
 }
 
 void win_draw_color(win_t *win, win_color_t c) {
@@ -53,9 +61,15 @@ void win_clear(void) {
 }
 
 void win_frect(win_t *win, int x, int y, int w, int h) {
-    char rect_row[w + 1];
-    memset(rect_row, 'X', w);
-    rect_row[w] = '\0';
+    // creates the entire row for the full rect layers
+    // just a single time before draws
+    size_t rr_size = w * win->block_len;
+    char rect_row[rr_size + 1]; // +1 for the null-terminated string
+
+    for (int k = 0; k < w; k++)
+        memcpy(rect_row + k * win->block_len, win->block_char, win->block_len);
+
+    rect_row[rr_size] = '\0';
 
     for (int k = y; k < y + h; k++) {
         win_move_cursor(win, x, k);
