@@ -19,7 +19,7 @@ void win_init(win_t *win) {
     win_block_char(win, "X");
 
     // default to uncolored output
-    win->curr_color = CL_NC;
+    win_draw_color(win, CL_NC);
 
     // enables alternate screen buffer and turns cursor invisible
     fprintf(stdout, "\033[?1049h\033[?25l");
