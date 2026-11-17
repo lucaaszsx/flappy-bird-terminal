@@ -34,8 +34,12 @@ void win_stop(void) {
 }
 
 void win_refresh(win_t *win) {
-    struct winsize ws;
-    ioctl(0, TIOCGWINSZ, &ws);
+    struct winsize ws = {0};
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) != 0) {
+        win_stop();
+        perror("failed to get terminal window bounds: ");
+        exit(1);
+    }
 
     win->w = ws.ws_col;
     win->h = ws.ws_row;
