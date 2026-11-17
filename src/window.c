@@ -46,8 +46,7 @@ void win_refresh(win_t *win) {
 }
 
 
-void win_move_cursor(win_t *win, int x, int y) {
-    // todo: verify if the x and y are in range of the width/height of the window
+void win_move_cursor(int x, int y) {
     // convert 0-indexed positions (x,y) to 1-indexed positions
     fprintf(stdout, "\033[%d;%dH", y + 1, x + 1);
 }
