@@ -2,9 +2,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdio.h>
+#include "window.h"
+#include "util.h"
 
+#define ANSI_RED    "\e[031m"
 #define ANSI_GREEN  "\e[032m"
 #define ANSI_YELLOW "\e[033m"
+#define ANSI_BLUE   "\e[034m"
 #define ANSI_RST    "\e[0m"
 
 char *_get_cl_enum(win_color_t c);
@@ -83,10 +91,14 @@ void win_flush(void) {
 
 char *_get_cl_enum(win_color_t c) {
     switch (c) {
+        case CL_RED:
+            return ANSI_RED;
         case CL_GREEN:
             return ANSI_GREEN;
         case CL_YELLOW:
             return ANSI_YELLOW;
+        case CL_BLUE:
+            return ANSI_BLUE;
         default:
             return ANSI_RST;
     }

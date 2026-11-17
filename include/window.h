@@ -1,9 +1,12 @@
 #pragma once
 
 #include <stddef.h>
+
 typedef enum {
     CL_GREEN,
     CL_YELLOW,
+    CL_BLUE,
+    CL_RED,
     CL_NC // no color
 } win_color_t;
 
