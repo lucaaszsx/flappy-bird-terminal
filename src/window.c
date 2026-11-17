@@ -69,6 +69,22 @@ void win_clear(void) {
 }
 
 void win_frect(win_t *win, int x, int y, int w, int h) {
+    // verify horizontal bounds of the screen
+    if (x + w >= win->w) {
+        w = min(win->w - x, w);
+    } else if (x < 0) {
+        w = max(w + x, 0);
+        x = 0;
+    }
+
+    // verify vertical bounds of the screen
+    if (y >= win->h) {
+        h = min(win->h - y, h);
+    } else if (y < 0) {
+        h = max(h + y, 0);
+        y = 0;
+    }
+
     // creates the entire row for the full rect layers
     // just a single time before draws
     size_t rr_size = w * win->block_len;
