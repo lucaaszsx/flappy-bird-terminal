@@ -17,7 +17,7 @@ TARGET=$(BIN)/$(PROJ_NAME)
 # compiler
 CC=gcc
 CC_FLAGS=-c -Wall -Wextra -I$(INCLUDE) -MMD -MP
-LD_FLAGS=-lm -lncurses
+LD_FLAGS=-lm
 
 # debug/release flags
 ifeq ($(BUILD_TYPE),debug)
