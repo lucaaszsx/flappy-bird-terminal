@@ -23,7 +23,7 @@ void win_stop(void);
 void win_refresh(win_t *win);
 
 // control
-void win_move_cursor(win_t *, int x, int y);
+void win_move_cursor(int x, int y);
 void win_flush(void);
 
 // drawing

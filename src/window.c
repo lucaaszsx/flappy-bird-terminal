@@ -1,6 +1,3 @@
-#include "window.h"
-#include <stdio.h>
-#include <string.h>
 #include <sys/ioctl.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,7 +23,7 @@ void win_init(win_t *win) {
 
     // enables alternate screen buffer and turns cursor invisible
     fprintf(stdout, "\033[?1049h\033[?25l");
-    win_move_cursor(win, 0, 0);
+    win_move_cursor(0, 0);
     win_flush();
 }
 
@@ -80,7 +77,7 @@ void win_frect(win_t *win, int x, int y, int w, int h) {
     rect_row[rr_size] = '\0';
 
     for (int k = y; k < y + h; k++) {
-        win_move_cursor(win, x, k);
+        win_move_cursor(x, k);
         win_put_str(win, rect_row);
     }
 }
