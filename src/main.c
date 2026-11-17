@@ -1,39 +1,36 @@
 #include "window.h"
 #include "game.h"
+#include "util.h"
 #include <signal.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
-
-#define NS_IN_SEC 1000000000ULL
 
 const float TARGET_FPS = 30.0f;
 const uint64_t TARGET_FRAME_TIME = (uint64_t) (NS_IN_SEC / TARGET_FPS); // frames per nanosecond
 
 win_t window;
 
-uint64_t delta_time(struct timespec end, struct timespec start);
-void on_window_resize(int);
-void on_exit_(int);
+void handle_window_resize(int);
+void handle_exit(int);
 
 int main() {
-    signal(SIGWINCH, on_window_resize);
-    signal(SIGINT, on_exit_);
+    signal(SIGWINCH, handle_window_resize);
+    signal(SIGINT, handle_exit);
 
     win_init(&window);
+    win_refresh(&window);
     game_init(&window);
 
     struct timespec frame_start, frame_end;
 
     win_block_char(&window, "\u2588");
 
-    win_color_t c1 = CL_YELLOW, c2 = CL_GREEN;
-
     while (1) {
         clock_gettime(CLOCK_MONOTONIC, &frame_start);
 
         // rendering
-        game_tick(&window);
+        game_tick(&window, frame_start);
 
         // fps limiter
         clock_gettime(CLOCK_MONOTONIC, &frame_end);
@@ -49,17 +46,12 @@ int main() {
     return 0;
 }
 
-uint64_t delta_time(struct timespec end, struct timespec start) {
-    return (end.tv_sec - start.tv_sec) * NS_IN_SEC +
-            (end.tv_nsec - start.tv_nsec);
-}
-
-
-void on_window_resize(int) {
+void handle_window_resize(int _) {
     win_refresh(&window);
+    game_refresh(&window);
 }
 
-void on_exit_(int) {
+void handle_exit(int _) {
     win_stop();
     exit(0);
 }

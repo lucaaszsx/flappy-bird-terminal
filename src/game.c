@@ -1,10 +1,13 @@
 #include "game.h"
 #include "window.h"
+#include "util.h"
 #include <bits/time.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <time.h>
+#include <stdbool.h>
 
-#define NS_IN_SEC 1000000000ULL
+#define TOTAL_PIPES 3
 
 // clear -> draw bg -> draw bird -> draw pipe
 
@@ -17,37 +20,48 @@ typedef struct {
 
 const int width = 10;
 const int height = 10;
-Pipe pipe;
-struct timespec frame_start, frame_end;
+Pipe pipe[TOTAL_PIPES];
 struct timespec last_pipe_frame = {0,0};
-
-uint64_t delta_time2(struct timespec end, struct timespec start);
+struct timespec last_bird_frame = {0,0};
+bool game_over = false;
 
 void game_init(win_t *win) {
-    pipe.x = win->w - width;
-    pipe.y = win->h - height;
-    pipe.w = width;
-    pipe.h = height;
+    for (size_t k = 0; k < TOTAL_PIPES; k++) {
+        pipe[k].x = win->w - k * 11 - 1;
+        pipe[k].y = win->h - 1;
+        pipe[k].w = 10;
+        pipe[k].h = 10;
+    }
 }
 
-void game_tick(win_t *win) {
-    clock_gettime(CLOCK_MONOTONIC, &frame_start);
+void game_refresh(win_t *win) {}
 
-    win_draw_color(win, CL_GREEN);
-    win_frect(win, 0, 0, win->w, win->h);
-
-    win_draw_color(win, CL_YELLOW);
-    win_frect(win, pipe.x, pipe.y, pipe.w, pipe.h);
-
-    if (delta_time2(frame_start, last_pipe_frame) >= NS_IN_SEC / 2) {
-        if (pipe.x <= 0) pipe.x = win->w - pipe.w;
-        else pipe.x -= 1;
+void game_tick(win_t *win, struct timespec current_frame) {
+    if (game_over) {
+        win_draw_color(win, CL_RED);
+        win_frect(win, 0, 0, win->w, win->h);
+        win_flush();
+        return;
     }
 
-    win_flush();
-}
+    clock_gettime(CLOCK_MONOTONIC, &current_frame);
 
-uint64_t delta_time2(struct timespec end, struct timespec start) {
-    return (end.tv_sec - start.tv_sec) * NS_IN_SEC +
-            (end.tv_nsec - start.tv_nsec);
+    win_draw_color(win, CL_BLUE);
+    win_frect(win, 0, 0, win->w, win->h);
+
+    bool update_pipes = delta_time(current_frame, last_pipe_frame) >= NS_IN_SEC / 36;
+    if (update_pipes) last_pipe_frame = current_frame;
+
+    for (size_t k = 0; k < TOTAL_PIPES; k++) {
+        win_draw_color(win, CL_GREEN);
+        win_frect(win, pipe[k].x, pipe[k].y, pipe[k].w, pipe[k].h);
+
+        if (update_pipes) {
+            if (pipe[k].x <= -pipe[k].w) pipe[k].x = win->w;
+            else pipe[k].x -= 1;
+        }
+    }
+
+
+    win_flush();
 }

@@ -1,10 +1,15 @@
 #include "window.h"
+#include "util.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 
+#define ANSI_RED    "\e[031m"
 #define ANSI_GREEN  "\e[032m"
 #define ANSI_YELLOW "\e[033m"
+#define ANSI_BLUE   "\e[034m"
 #define ANSI_RST    "\e[0m"
 
 char *_get_cl_enum(win_color_t c);
@@ -29,8 +34,11 @@ void win_stop(void) {
 }
 
 void win_refresh(win_t *win) {
-    struct winsize ws;
-    ioctl(0, TIOCGWINSZ, &ws);
+    struct winsize ws = {0};
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) != 0) {
+        perror("failed to get terminal window bounds: ");
+        exit(1);
+    }
 
     win->w = ws.ws_col;
     win->h = ws.ws_row;
@@ -61,6 +69,20 @@ void win_clear(void) {
 }
 
 void win_frect(win_t *win, int x, int y, int w, int h) {
+    if (x + w >= win->w) {
+        w = min(win->w - x, w);
+    } else if (x < 0) {
+        w = max(w + x, 0);
+        x = 0;
+    }
+
+    if (y >= win->h) {
+        h = min(win->h - y, h);
+    } else if (y < 0) {
+        h = max(h + y, 0);
+        y = 0;
+    }
+
     // creates the entire row for the full rect layers
     // just a single time before draws
     size_t rr_size = w * win->block_len;
@@ -83,10 +105,14 @@ void win_flush(void) {
 
 char *_get_cl_enum(win_color_t c) {
     switch (c) {
+        case CL_RED:
+            return ANSI_RED;
         case CL_GREEN:
             return ANSI_GREEN;
         case CL_YELLOW:
             return ANSI_YELLOW;
+        case CL_BLUE:
+            return ANSI_BLUE;
         default:
             return ANSI_RST;
     }
