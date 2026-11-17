@@ -37,7 +37,7 @@ void win_refresh(win_t *win) {
     struct winsize ws = {0};
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) != 0) {
         win_stop();
-        perror("failed to get terminal window bounds: ");
+        perror("failed to get terminal window bounds");
         exit(1);
     }
 
