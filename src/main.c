@@ -19,7 +19,6 @@ int main() {
     signal(SIGINT, handle_exit);
 
     win_init(&window);
-    win_refresh(&window);
     game_init(&window);
 
     struct timespec frame_start, frame_end;
@@ -47,8 +46,10 @@ int main() {
 }
 
 void handle_window_resize(int _) {
+    win_t last_win = window;
+
     win_refresh(&window);
-    game_refresh(&window);
+    game_refresh(last_win, &window);
 }
 
 void handle_exit(int _) {

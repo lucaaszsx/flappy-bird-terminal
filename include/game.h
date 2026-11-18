@@ -19,5 +19,5 @@ typedef struct {
 } game_t;
 
 void game_init(win_t *win);
-void game_refresh(win_t *win);
+void game_refresh(win_t last_win, win_t *current_win);
 void game_tick(win_t *win, struct timespec current_frame);
