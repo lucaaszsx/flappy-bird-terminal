@@ -9,6 +9,7 @@
 const float TARGET_FPS = 30.0f;
 const uint64_t TARGET_FRAME_TIME = (uint64_t) (NS_IN_SEC / TARGET_FPS); // frames per nanosecond
 
+game_t game;
 win_t window;
 
 void handle_window_resize(int);
@@ -19,7 +20,7 @@ int main() {
     signal(SIGINT, handle_exit);
 
     win_init(&window);
-    game_init(&window);
+    game_init(&game, &window);
 
     struct timespec frame_start, frame_end;
 
@@ -29,7 +30,7 @@ int main() {
         clock_gettime(CLOCK_MONOTONIC, &frame_start);
 
         // rendering
-        game_tick(&window, frame_start);
+        game_tick(&game, frame_start);
 
         // fps limiter
         clock_gettime(CLOCK_MONOTONIC, &frame_end);

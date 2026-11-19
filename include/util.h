@@ -8,3 +8,5 @@
 uint64_t delta_time(struct timespec end, struct timespec start);
 int min(int a, int b);
 int max(int a, int b);
+double normalize(int value, int range);
+int denormalize(double value, int range);

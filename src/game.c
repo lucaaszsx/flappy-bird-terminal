@@ -1,76 +1,75 @@
 #include "game.h"
-#include "window.h"
 #include "util.h"
-#include <bits/time.h>
-#include <math.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <time.h>
+#include "window.h"
+#include <assert.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
-#define TOTAL_PIPES 3
+static void pipe_append(game_t *g, size_t pipe_idx);
+static void pipe_draw(game_t *g, size_t pipe_idx);
 
-// clear -> draw bg -> draw bird -> draw pipe
+void game_init(game_t *g, win_t *win) {
+    g->win = win;
+    g->last_pipe_frame = (struct timespec){0};
 
-typedef struct {
-    int x;
-    int y;
-    int w;
-    int h;
-} Pipe;
-
-const int width = 10;
-const int height = 10;
-Pipe pipe[TOTAL_PIPES];
-struct timespec last_pipe_frame = {0,0};
-struct timespec last_bird_frame = {0,0};
-bool game_over = false;
-const win_color_t cls[TOTAL_PIPES]={CL_RED,CL_GREEN,CL_YELLOW};
-
-void game_init(win_t *win) {
-    for (size_t k = 0; k < TOTAL_PIPES; k++) {
-        pipe[k].x = win->w - k * 11 - 1;
-        pipe[k].y = win->h - 1;
-        pipe[k].w = 10;
-        pipe[k].h = 10;
-    }
+    for (size_t k = 0; k < NUM_PIPES; k++)
+        pipe_append(g, k);
 }
 
-void game_refresh(win_t last_win, win_t *current_win) {
-    double scale_x = (double) current_win->w / last_win.w;
-    double scale_y = (double) current_win->h / last_win.h;
+void game_refresh(win_t last_win, win_t *current_win) {}
 
-    for (size_t k = 0; k < TOTAL_PIPES; k++) {
-        pipe[k].x = round((double)pipe[k].x * scale_x);
-        pipe[k].y = round((double)pipe[k].y * scale_y);
-    }
-}
-
-void game_tick(win_t *win, struct timespec current_frame) {
-    if (game_over) {
-        win_draw_color(win, CL_RED);
-        win_frect(win, 0, 0, win->w, win->h);
-        win_flush();
-        return;
-    }
-
+void game_tick(game_t *g, struct timespec current_frame) {
     clock_gettime(CLOCK_MONOTONIC, &current_frame);
 
-    win_draw_color(win, CL_BLUE);
-    win_frect(win, 0, 0, win->w, win->h);
+    win_draw_color(g->win, CL_BLUE);
+    win_frect(g->win, 0, 0, g->win->w, g->win->h);
 
-    bool update_pipes = delta_time(current_frame, last_pipe_frame) >= NS_IN_SEC / 36;
-    if (update_pipes) last_pipe_frame = current_frame;
+    bool update_pipes = delta_time(current_frame, g->last_pipe_frame) >= NS_IN_SEC / 36;
+    if (update_pipes) g->last_pipe_frame = current_frame;
 
-    for (size_t k = 0; k < TOTAL_PIPES; k++) {
-        win_draw_color(win, cls[k]);
-        win_frect(win, pipe[k].x, pipe[k].y, pipe[k].w, pipe[k].h);
+    win_draw_color(g->win, CL_GREEN);
+    for (size_t k = 0; k < NUM_PIPES; k++) {
+        pipe_draw(g, k);
 
         if (update_pipes) {
-            if (pipe[k].x <= -pipe[k].w) pipe[k].x = win->w;
-            else pipe[k].x -= 1;
+            if (g->pipes[k].x > 0) g->pipes[k].x -= normalize(1, g->win->w);
         }
     }
 
     win_flush();
+}
+
+static int get_pipe_tp_size() {
+    assert(PIPE_MAX_HEIGHT - PIPE_MIN_HEIGHT > 0 &&
+            "maximum pipe height must be greater than minimum height");
+    return PIPE_MIN_HEIGHT + rand() % (PIPE_MAX_HEIGHT - PIPE_MIN_HEIGHT);
+}
+
+static void pipe_append(game_t *g, size_t pipe_idx) {
+    g->pipes[pipe_idx] = (pipe_t){
+        .x=1, // starts outside window width
+        .top_size=normalize(get_pipe_tp_size(), g->win->h), // gets a random value to be the height of the top pipe
+        .w=normalize(PIPE_WIDTH, g->win->w)
+    };
+}
+
+static void pipe_draw(game_t *g, size_t pipe_idx) {
+    pipe_t pipe = g->pipes[pipe_idx];
+
+    win_draw_color(g->win, CL_GREEN);
+
+    //int gap = normalize(PIPE_Y_GAP, g->win->h);
+    int x_normal = denormalize(pipe.x, g->win->w);
+    int w_normal = denormalize(pipe.w, g->win->w);
+    int top_h_normal = denormalize(pipe.top_size, g->win->h);
+
+    // draws the top part of the pipe
+    win_frect(g->win,
+                x_normal, 0,
+                w_normal, top_h_normal);
+
+    // draws the bottom part of the pipe
+
 }

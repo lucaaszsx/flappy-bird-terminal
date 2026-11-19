@@ -12,3 +12,11 @@ inline int min(int a, int b) {
 inline int max(int a, int b) {
     return a > b ? a : b;
 }
+
+inline double normalize(int value, int range) {
+    return (double)value / range;
+}
+
+inline int denormalize(double value, int range) {
+    return (int)value * range;
+}
