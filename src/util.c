@@ -18,5 +18,5 @@ inline double normalize(int value, int range) {
 }
 
 inline int denormalize(double value, int range) {
-    return (int)value * range;
+    return (int)(value * range);
 }
