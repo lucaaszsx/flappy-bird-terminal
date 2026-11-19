@@ -60,7 +60,7 @@ static void pipe_draw(game_t *g, size_t pipe_idx) {
 
     win_draw_color(g->win, CL_GREEN);
 
-    //int gap = normalize(PIPE_Y_GAP, g->win->h);
+    double gap = normalize(PIPE_Y_GAP, g->win->h);
     int x_normal = denormalize(pipe.x, g->win->w);
     int w_normal = denormalize(pipe.w, g->win->w);
     int top_h_normal = denormalize(pipe.top_size, g->win->h);
@@ -71,5 +71,8 @@ static void pipe_draw(game_t *g, size_t pipe_idx) {
                 w_normal, top_h_normal);
 
     // draws the bottom part of the pipe
-
+    win_draw_color(g->win, CL_RED);
+    win_frect(g->win,
+        x_normal, top_h_normal + denormalize(gap, g->win->h),
+        w_normal, 100);
 }
