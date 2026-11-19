@@ -16,6 +16,8 @@ void handle_window_resize(int);
 void handle_exit(int);
 
 int main() {
+    srand(time(NULL));
+
     signal(SIGWINCH, handle_window_resize);
     signal(SIGINT, handle_exit);
 
